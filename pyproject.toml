@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geowizard"
+dynamic = ["version"]
+description = "GeoWizard: Diffusion-based monocular depth and surface normal estimation"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "xformers>=0.0.21",
+    "diffusers>=0.25.0",
+    "huggingface_hub>=0.21.3",
+    "opencv-python",
+    "numpy>=1.23.1",
+    "Pillow",
+    "h5py",
+    "matplotlib>=3.7.5",
+    "scikit-image>=0.18.1",
+    "tqdm>=4.65.0",
+    "accelerate>=0.28.0",
+    "transformers>=4.39.1",
+    "imgaug",
+    "GitPython>=3.1.40",
+    "pygltflib>=1.16.1",
+    "pyvista>=0.37.0",
+    "fire",
+]
+
+[project.optional-dependencies]
+gradio = [
+    "gradio>=4.11.0",
+    "gradio-imageslider>=0.0.16",
+]
+mesh = [
+    "trimesh>=4.0.5",
+]
+
+[tool.setuptools]
+packages = ["geowizard"]
+
+[tool.setuptools.dynamic]
+version = {attr = "geowizard.__version__"}
