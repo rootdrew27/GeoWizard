@@ -36,6 +36,9 @@ gradio = [
 mesh = [
     "trimesh>=4.0.5",
 ]
+bini-cupy = [
+    "cupy-cuda12x",
+]
 
 [tool.setuptools]
 packages = ["geowizard"]

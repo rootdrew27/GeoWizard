@@ -286,7 +286,7 @@ def bilateral_normal_integration(normal_map,
 
         # ml = smoothed_aggregation_solver(A_mat, max_levels=4)  # AMG preconditioner, not very stable but faster than Jacob preconditioner.
         # D = ml.aspreconditioner(cycle='W')
-        z, _ = cg(A_mat, b_vec, x0=z, M=D, maxiter=cg_max_iter, tol=cg_tol)
+        z, _ = cg(A_mat, b_vec, x0=z, M=D, maxiter=cg_max_iter, rtol=cg_tol)
 
         # Update the weight matrices
         wu = sigmoid((A2 @ z) ** 2 - (A1 @ z) ** 2, k)
@@ -350,6 +350,7 @@ if __name__ == '__main__':
     parser.add_argument('-k', type=float, default=2)
     parser.add_argument('-i', '--iter', type=np.uint, default=150)
     parser.add_argument('-t', '--tol', type=float, default=1e-4)
+    parser.add_argument('-l', '--lambda1', type=float, default=0.0)
     arg = parser.parse_args()
 
     # load normal map
@@ -366,7 +367,14 @@ if __name__ == '__main__':
 
     # load mask map
     try:
-        mask = np.array(Image.open(os.path.join(arg.path, "mask.png")))[...,3].astype(bool)
+        mask_img = Image.open(os.path.join(arg.path, "mask.png"))
+        if mask_img.mode == "RGBA":
+            mask = np.array(mask_img)[..., 3].astype(bool)
+        elif mask_img.mode == "L":
+            mask = np.array(mask_img).astype(bool)
+        else:
+            mask_img = mask_img.convert("L")
+            mask = np.array(mask_img).astype(bool)
     except:
         mask = np.ones(normal_map.shape[:2], bool)
 
@@ -376,6 +384,7 @@ if __name__ == '__main__':
                                                                                        normal_mask=mask,
                                                                                        depth_map=depth_map,
                                                                                        depth_mask=mask,
+                                                                                       lambda1=arg.lambda1,
                                                                                        k=arg.k,
                                                                                        K=K,
                                                                                        max_iter=arg.iter,
@@ -385,6 +394,7 @@ if __name__ == '__main__':
                                                                                        normal_mask=mask,
                                                                                        depth_map=depth_map,
                                                                                        depth_mask=mask,
+                                                                                       lambda1=arg.lambda1,
                                                                                        k=arg.k,
                                                                                        K=None,
                                                                                        max_iter=arg.iter,
